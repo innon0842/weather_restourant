@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:16-alpine 
+    container_name: my_postgres_container 
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-myuser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mypassword123}
+      POSTGRES_DB: ${DB_DATABASE:-mydatabase}
+    ports:
+      - "5432:5432"               
+    volumes:
+      - postgres_data:/var/lib/postgresql/data 
+    restart: always               
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weather_plus_app
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-myuser}
+      DB_PASSWORD: ${DB_PASSWORD:-mypassword123}
+      DB_DATABASE: ${DB_DATABASE:-mydatabase}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+    depends_on:
+      - postgres-db
+    restart: always
+
+volumes:
+  postgres_data:

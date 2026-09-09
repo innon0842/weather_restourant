@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Build and test output
+.next/
+dist/
+build/
+out/
+coverage/
+*.tsbuildinfo
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime data
+uploads/
+logs/
+*.log
+
+# Local tooling and operating-system files
+.DS_Store
+.idea/
+.vscode/
+.vercel/
+
+# Crawled and generated data
+*.csv
+*.xlsx
+crawled_data/
+crawler_output/
+crawler_data/
+
