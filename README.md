@@ -1,114 +1,209 @@
-# Weather Eat (웨더잇)
+# Weather Eat 🌦️🍽️
 
-> 실시간 날씨와 사용자 위치를 바탕으로 지금 가기 좋은 식당을 추천하고 예약까지 연결하는 지도 애플리케이션
+> **현재 날씨와 위치를 기반으로 지금 가기 좋은 식당을 추천해주는 앱**
 
-Weather Eat은 기온, 강수, 하늘 상태, 시간대와 식당까지의 거리를 함께 반영해 주변 식당의 적합도를 계산합니다. 사용자는 카카오 지도에서 추천 결과를 비교하고, 원하는 식당의 상세 정보를 확인한 뒤 예약할 수 있습니다.
+`Next.js` · `NestJS` · `TypeScript` · `PostgreSQL` · `TypeORM` · `Docker` · `Kakao API`
 
-## 주요 기능
+---
 
-- 현재 위치 또는 검색 지역을 기준으로 주변 식당 탐색
-- 날씨·시간대·거리 기반 식당 적합도 점수와 추천 이유 제공
-- 한식, 중식, 일식, 양식, 카페 등 카테고리 필터링
-- 카카오 지도 마커, 지도 이동 후 재검색, 검색 반경 조절
-- 회원가입·로그인, 프로필 이미지와 닉네임 관리
-- 식당 예약 생성 및 내 예약 조회
-- 기상청 단기·중기예보와 대기 중금속 데이터 표시
+## Overview
 
-## 기술 스택
+**Weather Eat**은 사용자의 현재 위치와 날씨를 분석해 주변 식당을 추천해주는 서비스입니다.
 
-| 영역 | 기술 |
-| --- | --- |
-| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Backend | NestJS 11, TypeScript, TypeORM |
+단순히 가까운 식당을 보여주는 것이 아니라,
+
+> **“오늘 같은 날씨에는 뭘 먹으면 좋을까?”**
+
+라는 질문에서 시작했습니다.
+
+비가 오는 날, 더운 날, 추운 날처럼 날씨 상황에 따라 어울리는 음식과 식당을 추천하고, 지도에서 위치를 확인한 뒤 원하는 식당을 선택할 수 있도록 구현했습니다.
+
+---
+
+## Main Features
+
+### 🌦️ 날씨 기반 추천
+
+현재 날씨 정보를 활용해 식당 추천 결과에 반영합니다.
+
+예를 들어,
+
+- 비 오는 날
+- 더운 날
+- 추운 날
+- 맑은 날
+
+등의 조건에 따라 음식과 식당의 적합도를 계산합니다.
+
+---
+
+### 📍 위치 기반 식당 탐색
+
+사용자의 현재 위치 또는 검색한 지역을 기준으로 주변 식당을 탐색합니다.
+
+- Kakao Maps API
+- Kakao Local API
+- 지도 마커 표시
+- 지도 이동 후 재검색
+- 검색 반경 조절
+
+---
+
+### 🍽️ 식당 추천 점수
+
+Weather Eat은 여러 조건을 조합해 식당의 추천 점수를 계산합니다.
+
+```text
+Weather
+   +
+Time
+   +
+Distance
+   ↓
+Recommendation Score
+   ↓
+Restaurant Ranking
+```
+
+주요 요소는 다음과 같습니다.
+
+- 현재 날씨
+- 시간대
+- 사용자와 식당 사이의 거리
+
+계산된 결과를 바탕으로 식당을 정렬하고 추천 이유를 함께 제공합니다.
+
+---
+
+### 🔎 카테고리 필터
+
+원하는 음식 종류를 기준으로 검색 결과를 필터링할 수 있습니다.
+
+- 한식
+- 중식
+- 일식
+- 양식
+- 카페
+
+---
+
+### 👤 사용자 기능
+
+- 회원가입
+- 로그인
+- JWT 기반 인증
+- 프로필 관리
+
+---
+
+### 📅 식당 예약
+
+추천받은 식당을 확인한 뒤 예약할 수 있습니다.
+
+- 예약 생성
+- 내 예약 조회
+
+---
+
+## Architecture
+
+```mermaid
+flowchart LR
+    U[User] --> C[Next.js Client]
+
+    C --> K[Kakao Maps / Local API]
+    C --> A[NestJS API]
+
+    A --> W[Weather API]
+    A --> DB[(PostgreSQL)]
+    A --> R[Recommendation Logic]
+
+    R --> C
+```
+
+Frontend와 Backend를 분리하고, 서버에서 날씨 데이터와 식당 데이터를 조합해 추천 결과를 생성하도록 구성했습니다.
+
+---
+
+## Tech Stack
+
+| Area | Technology |
+|---|---|
+| Frontend | Next.js 16, React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 |
+| Backend | NestJS 11 |
+| ORM | TypeORM |
 | Database | PostgreSQL 16 |
 | Authentication | JWT, bcrypt |
-| External APIs | Kakao Maps/Local API, 공공데이터포털 기상·대기 데이터 |
+| Maps | Kakao Maps / Local API |
+| Weather Data | 공공데이터 API |
 | Infrastructure | Docker, Docker Compose |
 
-## 프로젝트 구조
+---
+
+## Project Structure
 
 ```text
 weather-eat/
-├── README.md                # 프로젝트 요약과 실행 방법
-├── .gitignore               # 비밀정보·빌드 결과 제외
-├── docs/                    # 설계·시연·기술 문서
-│   ├── ARCHITECTURE.md
-│   ├── RECOMMENDATION_LOGIC.md
-│   ├── DEMO_SCENARIO.md
-│   ├── ENGINEERING_NOTES.md
-│   ├── GITHUB_PUBLISHING.md
-│   └── API_SPECIFICATION.md
-├── client/                  # Next.js 웹 애플리케이션
-│   ├── app/                 # 페이지 및 날씨 API 프록시
-│   ├── components/          # 지도·추천·예약 UI
-│   ├── hooks/               # 인증·지도·추천 상태 로직
-│   └── types/               # 공통 TypeScript 타입
-└── server/                  # NestJS API 서버
-    ├── src/auth/            # 회원가입·로그인·JWT 인증
-    ├── src/restaurants/     # 식당 조회·추천·클릭 기록
-    ├── src/reservations/    # 예약 생성·조회
-    ├── src/users/           # 사용자·프로필 관리
-    └── src/weather/         # 기상·대기 데이터 연동
+├── client/
+│   ├── app/
+│   ├── components/
+│   ├── hooks/
+│   └── types/
+│
+├── server/
+│   └── src/
+│       ├── auth/
+│       ├── restaurants/
+│       ├── reservations/
+│       ├── users/
+│       └── weather/
+│
+├── docs/
+└── README.md
 ```
 
-## 추천 방식
+---
 
-서버는 카카오 Local API에서 검색한 식당에 기본 점수를 부여한 뒤 다음 조건을 합산합니다.
+## What I Built
 
-1. 비·눈, 맑음, 더위, 추위 등 현재 날씨와 음식 태그의 일치도
-2. 아침·점심·저녁 시간대와 식당 태그의 일치도
-3. 사용자와 식당 사이의 거리 가중치
+이 프로젝트에서는 날씨 데이터를 단순히 표시하는 데 그치지 않고, 실제 서비스의 추천 기준으로 활용하는 데 집중했습니다.
 
-계산된 점수와 추천 이유를 함께 반환하고, 검색 반경 안의 식당을 점수순으로 정렬합니다.
+- 날씨 기반 Restaurant Recommendation Logic
+- 위치 기반 식당 탐색
+- Kakao Maps / Local API 연동
+- 공공 날씨 데이터 연동
+- NestJS 기반 REST API
+- JWT Authentication
+- PostgreSQL / TypeORM 기반 데이터 관리
+- 식당 예약 기능
+- Docker 기반 개발 환경 구성
 
-## 로컬 실행
+---
 
-### 준비 사항
+## What I Learned
 
-- Node.js 20 이상
-- Docker 및 Docker Compose
-- Kakao Developers의 JavaScript 키와 REST API 키
-- 공공데이터포털에서 발급받은 서비스 키
+Weather Eat을 개발하며 여러 외부 데이터를 하나의 서비스 기능으로 연결하는 경험을 했습니다.
 
-### 1. 환경변수 설정
+특히,
 
-```bash
-cp client/.env.example client/.env.local
-cp server/.env.example server/.env
-```
+- 외부 API 연동
+- 지도 기반 UI
+- 추천 Logic 설계
+- Frontend / Backend 분리
+- Authentication
+- Database 설계
+- Docker 기반 개발 환경
 
-복사한 파일에 본인의 API 키와 로컬 설정값을 입력합니다. `.env`와 `.env.local`은 Git에 포함되지 않습니다.
+을 직접 구성했습니다.
 
-### 2. 서버 실행
+가장 중요하게는 **날씨라는 Context Data를 실제 사용자 추천 결과로 연결하는 방법**을 고민해볼 수 있었습니다.
 
-```bash
-cd server
-npm ci
-docker compose up -d postgres-db
-npm run start:dev
-```
+---
 
-API 서버는 기본적으로 `http://localhost:4000`에서 실행됩니다.
+## Closing
 
-### 3. 클라이언트 실행
+**Weather Eat은 날씨에 따라 달라지는 사용자의 음식 선택을 더 쉽게 만드는 것을 목표로 합니다.**
 
-```bash
-cd client
-npm ci
-npm run dev
-```
-
-브라우저에서 `http://localhost:3000`을 엽니다.
-
-## 문서
-
-- [시스템 아키텍처](docs/ARCHITECTURE.md)
-- [추천 로직](docs/RECOMMENDATION_LOGIC.md)
-- [데모 시나리오](docs/DEMO_SCENARIO.md)
-- [설계 결정과 기술적 한계](docs/ENGINEERING_NOTES.md)
-- [GitHub 게시 안내](docs/GITHUB_PUBLISHING.md)
-- [API 명세](docs/API_SPECIFICATION.md)
-
-## 공개 저장소 안내
-
-이 포트폴리오 복사본에는 의존성, 빌드 결과, 로컬 환경변수, 업로드 파일과 개발 도구 전용 지침을 포함하지 않았습니다. API 키는 환경변수로만 주입해야 합니다.
+> Weather → Restaurant Recommendation → Better Choice
